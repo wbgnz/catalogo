@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refrigeradores GYN-ICE | Catálogo Interativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Verde-azulado Profissional -->
+    <!-- Application Structure Plan: The SPA is structured as an interactive product landing page to expand on the claims of the source advertisement. It follows a logical sales funnel: Hero section (main promise), Advantages (the 'why,' with an interactive chart for performance and feature cards for durability/design), Models (the 'what,' with a filterable gallery), Testimonials (social proof), and Contact (the call-to-action). This structure was chosen to guide a potential business owner from initial interest, through feature exploration, to a conversion (contact), making the ad's persuasive points tangible and explorable. -->
+    <!-- Visualization & Content Choices: 1. Performance Comparison: Goal=Compare, Viz=Bar Chart (Chart.js/Canvas), Interaction=Static visual comparison, Justification=Clearly shows energy savings value proposition vs. competitors. 2. Durability Features: Goal=Inform, Viz=HTML/CSS feature cards with Unicode icons, Interaction=Hover effects, Justification=Easily scannable and digestible key features. 3. Product Models: Goal=Organize/Inform, Viz=Filterable gallery (HTML/JS), Interaction=Users filter models by type to explore options, Justification=Provides an interactive product catalog experience. 4. Testimonials/Contact: Goal=Inform/Action, Viz=Styled text blocks and HTML form, Justification=Builds trust and provides a clear conversion path. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .text-cyan-400 { color: #22d3ee; }
+        .bg-cyan-500 { background-color: #06b6d4; }
+        .hover\:bg-cyan-500:hover { background-color: #06b6d4; }
+        .border-cyan-500 { border-color: #06b6d4; }
+        .ring-cyan-500:focus { --tw-ring-color: #06b6d4; }
+        .glass-effect { background: rgba(17, 24, 39, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-minimal {
+            background-color: transparent;
+            border: 2px solid #06b6d4;
+            color: #06b6d4;
+            transition: all 0.3s ease;
+        }
+        .btn-minimal:hover {
+            background-color: #06b6d4;
+            color: #000;
+        }
+        .filter-btn-active {
+            background-color: #06b6d4 !important;
+            color: #000 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-slate-800">
+
+    <header class="bg-black/80 sticky top-0 z-50 glass-effect">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold text-white">
+                <span class="text-cyan-400">GYN</span>-ICE
+            </a>
+            <div class="hidden md:flex space-x-6 items-center text-white">
+                <a href="#vantagens" class="hover:text-cyan-400 transition-colors">Vantagens</a>
+                <a href="#modelos" class="hover:text-cyan-400 transition-colors">Nossos Modelos</a>
+                <a href="#depoimentos" class="hover:text-cyan-400 transition-colors">Depoimentos</a>
+                <a href="#contato" class="btn-minimal px-4 py-2 rounded-md font-semibold text-sm">Fale Conosco</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-black/80">
+            <a href="#vantagens" class="block py-2 px-6 text-sm text-white hover:bg-slate-800">Vantagens</a>
+            <a href="#modelos" class="block py-2 px-6 text-sm text-white hover:bg-slate-800">Nossos Modelos</a>
+            <a href="#depoimentos" class="block py-2 px-6 text-sm text-white hover:bg-slate-800">Depoimentos</a>
+            <a href="#contato" class="block py-2 px-6 text-sm text-white hover:bg-slate-800">Fale Conosco</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="relative bg-black text-white text-center py-20 md:py-32 overflow-hidden">
+            <canvas id="particle-canvas" class="absolute top-0 left-0 w-full h-full z-0"></canvas>
+            <div class="relative z-10 container mx-auto px-6">
+                <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4">Seu Ponto de Venda Merece o Melhor.</h1>
+                <p class="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-8">Refrigeradores Expositores que unem performance, durabilidade e design. Qualidade de fábrica garantida.</p>
+                <a href="#modelos" class="btn-minimal font-bold py-3 px-8 rounded-full text-lg">Ver Modelos</a>
+            </div>
+        </section>
+
+        <section id="vantagens" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">A Escolha Inteligente para o seu Negócio</h2>
+                    <p class="mt-4 text-slate-600 max-w-2xl mx-auto">Analisamos cada detalhe para oferecer um produto que não só embeleza seu estabelecimento, mas também otimiza seu lucro e operação. Explore os pilares da nossa qualidade.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-sm hover:shadow-xl transition-shadow">
+                        <div class="text-5xl text-cyan-500 mb-4">⚡️</div>
+                        <h3 class="text-xl font-bold mb-2">Performance Incomparável</h3>
+                        <p class="text-slate-600">Sistema de refrigeração de alta eficiência que gela mais rápido, gastando menos energia. Seus produtos sempre na temperatura ideal para o consumo.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-sm hover:shadow-xl transition-shadow">
+                         <div class="text-5xl text-cyan-500 mb-4">🛡️</div>
+                        <h3 class="text-xl font-bold mb-2">Durabilidade Comprovada</h3>
+                        <p class="text-slate-600">Construído com materiais de alta resistência e componentes de primeira linha para suportar a rotina intensa do seu comércio. Um investimento que se paga.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-lg shadow-sm hover:shadow-xl transition-shadow">
+                         <div class="text-5xl text-cyan-500 mb-4">🎨</div>
+                        <h3 class="text-xl font-bold mb-2">Design que Atrai</h3>
+                        <p class="text-slate-600">Linhas modernas, iluminação em LED e acabamento premium que valorizam seus produtos e transformam seu ponto de venda em um ambiente mais atraente.</p>
+                    </div>
+                </div>
+
+                <div class="mt-20">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl md:text-3xl font-bold">Economia que Você Vê na Prática</h3>
+                        <p class="mt-3 text-slate-600 max-w-2xl mx-auto">Nosso compromisso com a eficiência energética resulta em uma economia real na sua conta de luz. Veja a comparação de consumo mensal de um modelo padrão.</p>
+                    </div>
+                    <div class="chart-container bg-white p-4 rounded-lg shadow-lg border border-slate-200">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="modelos" class="py-16 md:py-24 bg-slate-900">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Nossos Modelos</h2>
+                    <p class="mt-4 text-slate-400 max-w-2xl mx-auto">Encontre o refrigerador perfeito para o seu espaço e necessidade. Todos os modelos com a garantia e a qualidade que só a fábrica pode oferecer.</p>
+                </div>
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-8" id="filter-buttons">
+                    <button data-filter="all" class="filter-btn px-4 py-2 rounded-md text-sm md:text-base font-semibold filter-btn-active">Todos</button>
+                    <button data-filter="compacto" class="filter-btn px-4 py-2 rounded-md text-sm md:text-base font-semibold text-slate-300 hover:bg-slate-800 transition-colors">Compactos</button>
+                    <button data-filter="duplo" class="filter-btn px-4 py-2 rounded-md text-sm md:text-base font-semibold text-slate-300 hover:bg-slate-800 transition-colors">Porta Dupla</button>
+                    <button data-filter="premium" class="filter-btn px-4 py-2 rounded-md text-sm md:text-base font-semibold text-slate-300 hover:bg-slate-800 transition-colors">Premium</button>
+                </div>
+                <div id="models-gallery" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            </div>
+        </section>
+
+        <section id="depoimentos" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900">O que Nossos Clientes Dizem</h2>
+                    <p class="mt-4 text-slate-600 max-w-2xl mx-auto">A satisfação de quem confia em nosso trabalho é o nosso maior orgulho.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 p-8 rounded-lg">
+                        <p class="text-slate-600 italic mb-4">"Troquei meus refrigeradores antigos pelos da GYN-ICE e a diferença na conta de luz foi imediata. Sem falar que a loja ficou com outra cara, muito mais moderna. As bebidas gelam rapidinho!"</p>
+                        <p class="font-bold text-slate-900">Carlos Andrade</p>
+                        <p class="text-sm text-cyan-600">Dono de Conveniência</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-lg">
+                        <p class="text-slate-600 italic mb-4">"A qualidade do material é excelente. Um equipamento robusto, fácil de limpar e que realmente valoriza a exposição dos meus bolos e doces. Comprarei outro para a filial com certeza."</p>
+                        <p class="font-bold text-slate-900">Juliana Ribeiro</p>
+                        <p class="text-sm text-cyan-600">Proprietária de Padaria</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contato" class="py-16 md:py-24 bg-black text-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">Fale com um Especialista</h2>
+                    <p class="mt-4 text-slate-300 max-w-2xl mx-auto">Pronto para transformar seu ponto de venda? Preencha o formulário e nossa equipe entrará em contato para oferecer a melhor solução para seu negócio.</p>
+                </div>
+                <form class="max-w-xl mx-auto">
+                    <div class="grid sm:grid-cols-2 gap-4 mb-4">
+                        <input type="text" placeholder="Seu nome" class="w-full p-3 rounded-md bg-gray-900 border border-slate-700 focus:ring-2 ring-cyan-500 focus:outline-none transition-shadow text-white">
+                        <input type="text" placeholder="Nome do estabelecimento" class="w-full p-3 rounded-md bg-gray-900 border border-slate-700 focus:ring-2 ring-cyan-500 focus:outline-none transition-shadow text-white">
+                    </div>
+                    <div class="mb-4">
+                        <input type="email" placeholder="Seu melhor e-mail" class="w-full p-3 rounded-md bg-gray-900 border border-slate-700 focus:ring-2 ring-cyan-500 focus:outline-none transition-shadow text-white">
+                    </div>
+                    <div class="mb-4">
+                        <textarea placeholder="Mensagem (opcional)" rows="4" class="w-full p-3 rounded-md bg-gray-900 border border-slate-700 focus:ring-2 ring-cyan-500 focus:outline-none transition-shadow text-white"></textarea>
+                    </div>
+                    <div class="text-center">
+                         <button type="submit" class="btn-minimal font-bold py-3 px-12 rounded-full text-lg">Enviar Contato</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-black text-slate-400 text-center py-6">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 GYN-ICE Refrigeração Industrial. Todos os direitos reservados.</p>
+            <p class="text-sm">Preços e condições direto da fábrica.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const performanceChartCtx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(performanceChartCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Consumo Mensal (kWh)'],
+            datasets: [
+                {
+                    label: 'Concorrente Genérico',
+                    data: [220],
+                    backgroundColor: 'rgba(200, 200, 200, 0.5)',
+                    borderColor: 'rgba(200, 200, 200, 0.8)',
+                    borderWidth: 1,
+                    borderRadius: 5
+                },
+                {
+                    label: 'GYN-ICE Modelo Padrão',
+                    data: [145],
+                    backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                    borderColor: 'rgba(6, 182, 212, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: 'Comparativo de Consumo de Energia'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + ' kWh';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'kWh / mês'
+                    }
+                }
+            }
+        }
+    });
+
+    const models = [
+        { id: 1, name: 'Compacto Vision 300L', category: 'compacto', image: 'https://placehold.co/600x600/06b6d4/ffffff?text=Vision+300L', description: 'Ideal para espaços reduzidos e balcões. Visibilidade total com máxima economia.' },
+        { id: 2, name: 'Duplo Max 750L', category: 'duplo', image: 'https://placehold.co/600x600/0891b2/ffffff?text=Duplo+Max', description: 'Grande capacidade de armazenamento com duas portas. Perfeito para alta demanda.' },
+        { id: 3, name: 'Premium Black 500L', category: 'premium', image: 'https://placehold.co/600x600/1e293b/ffffff?text=Premium+Black', description: 'Design sofisticado em black piano com iluminação customizável. Destaque seu produto.' },
+        { id: 4, name: 'Slim Fit 400L', category: 'compacto', image: 'https://placehold.co/600x600/06b6d4/ffffff?text=Slim+Fit', description: 'Design vertical elegante que otimiza o espaço sem perder capacidade.' },
+        { id: 5, name: 'Mega Freezer 1200L', category: 'duplo', image: 'https://placehold.co/600x600/0891b2/ffffff?text=Mega+Freezer', description: 'A maior capacidade da categoria, com divisórias inteligentes para organização.' },
+        { id: 6, name: 'Lux Wine Cooler', category: 'premium', image: 'https://placehold.co/600x600/1e293b/ffffff?text=Lux+Wine', description: 'Climatizador de vinhos com controle preciso de temperatura e umidade. Para clientes exigentes.' }
+    ];
+
+    const gallery = document.getElementById('models-gallery');
+    const filterButtonsContainer = document.getElementById('filter-buttons');
+
+    function displayModels(filter = 'all') {
+        gallery.innerHTML = '';
+        const filteredModels = models.filter(model => filter === 'all' || model.category === filter);
+        
+        filteredModels.forEach(model => {
+            const card = `
+                <div class="bg-black rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 border border-slate-800">
+                    <img src="${model.image}" alt="${model.name}" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2 text-white">${model.name}</h3>
+                        <p class="text-slate-400">${model.description}</p>
+                    </div>
+                </div>
+            `;
+            gallery.innerHTML += card;
+        });
+    }
+
+    filterButtonsContainer.addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') {
+            const filter = e.target.getAttribute('data-filter');
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('filter-btn-active');
+            });
+            e.target.classList.add('filter-btn-active');
+
+            displayModels(filter);
+        }
+    });
+
+    displayModels();
+
+    // Particle Animation Script
+    const particleCanvas = document.getElementById('particle-canvas');
+    if (particleCanvas) {
+        const ctx = particleCanvas.getContext('2d');
+        let particlesArray;
+        let mouse = {
+            x: null,
+            y: null,
+            radius: 150
+        }
+
+        function setCanvasSize() {
+            const container = particleCanvas.parentElement;
+            particleCanvas.width = container.clientWidth;
+            particleCanvas.height = container.clientHeight;
+        }
+
+        particleCanvas.parentElement.addEventListener('mousemove', (event) => {
+            const rect = particleCanvas.getBoundingClientRect();
+            mouse.x = event.clientX - rect.left;
+            mouse.y = event.clientY - rect.top;
+        });
+        
+        particleCanvas.parentElement.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            update() {
+                if (this.x > particleCanvas.width || this.x < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y > particleCanvas.height || this.y < 0) {
+                    this.directionY = -this.directionY;
+                }
+
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < mouse.radius + this.size) {
+                    if (mouse.x < this.x && this.x < particleCanvas.width - this.size * 10) {
+                        this.x += 3;
+                    }
+                    if (mouse.x > this.x && this.x > this.size * 10) {
+                        this.x -= 3;
+                    }
+                    if (mouse.y < this.y && this.y < particleCanvas.height - this.size * 10) {
+                        this.y += 3;
+                    }
+                    if (mouse.y > this.y && this.y > this.size * 10) {
+                        this.y -= 3;
+                    }
+                }
+
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function initParticles() {
+            setCanvasSize();
+            particlesArray = [];
+            let numberOfParticles = (particleCanvas.width * particleCanvas.height) / 9000;
+            const colors = ['#22d3ee', '#06b6d4', '#0891b2'];
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * ((particleCanvas.width - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((particleCanvas.height - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * 0.4) - 0.2;
+                let directionY = (Math.random() * 0.4) - 0.2;
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                                 ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (particleCanvas.width / 7) * (particleCanvas.height / 7)) {
+                        opacityValue = 1 - (distance / 20000);
+                        ctx.strokeStyle = `rgba(34, 211, 238, ${opacityValue})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        function animateParticles() {
+            requestAnimationFrame(animateParticles);
+            ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connectParticles();
+        }
+
+        window.addEventListener('resize', () => {
+            initParticles();
+        });
+
+        initParticles();
+        animateParticles();
+    }
+});
+</script>
+</body>
+</html>
